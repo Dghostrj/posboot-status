@@ -1,53 +1,125 @@
-<div id="status-box" style="margin-top:20px; font-size:14px; color:#94a3b8;">
-    🔄 Tentando reconectar ao servidor... <br>
-    ⏳ Próxima tentativa em <span id="countdown">5</span>s
-</div>
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POSBOOT | Reconectando...</title>
+
+    <!-- reaproveita seu CSS do site principal -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="nav-container">
+        <div class="logo">
+            <img src="icone.png" style="border-radius:50%; width:50px;">
+            POSBOOT<span>_</span>
+        </div>
+    </div>
+</header>
+
+<main>
+
+    <section class="hero">
+
+        <h1>⚠️ Instabilidade detectada</h1>
+
+        <p style="color: var(--text-muted);">
+            Estamos enfrentando uma possível interrupção temporária no servidor.
+        </p>
+
+        <!-- cards usando seu próprio CSS -->
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Energia</h3>
+                <p>Possível queda elétrica no servidor.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Rede</h3>
+                <p>Instabilidade na conexão principal.</p>
+            </div>
+
+        </div>
+
+        <!-- STATUS BOX -->
+        <div class="download-box" style="margin-top:2rem;">
+
+            <h2 style="margin-bottom:10px;">
+                🔄 Reconectando ao servidor
+            </h2>
+
+            <p style="color: var(--text-muted);">
+                Tentando restabelecer conexão automaticamente...
+            </p>
+
+            <div style="font-size:2rem; font-weight:800; color: var(--accent); margin-top:10px;">
+                <span id="countdown">5</span>s
+            </div>
+
+            <button class="btn-primary" onclick="location.reload()" style="margin-top:15px;">
+                Tentar agora
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 POSBOOT.com.br | Sistema de fallback automático
+    </div>
+</footer>
 
 <script>
 let time = 5;
-const countdownEl = document.getElementById("countdown");
+const el = document.getElementById("countdown");
 
-async function checkServer() {
+async function check() {
     try {
-        // tenta acessar seu site principal
-        const res = await fetch("https://posboot.com.br", {
+        const r = await fetch("https://posboot.com.br", {
             method: "HEAD",
             cache: "no-store"
         });
 
-        if (res.ok) {
-            return true;
+        if (r.ok) {
+            document.body.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
+                    🟢 Servidor restaurado! Redirecionando...
+                </div>
+            `;
+
+            setTimeout(() => {
+                window.location.href = "https://posboot.com.br";
+            }, 1200);
+
+            return;
         }
-    } catch (e) {
-        return false;
-    }
-    return false;
+    } catch (e) {}
 }
 
-async function loop() {
-    const isOnline = await checkServer();
-
-    if (isOnline) {
-        document.getElementById("status-box").innerHTML =
-            "🟢 Servidor restaurado! Redirecionando...";
-
-        setTimeout(() => {
-            window.location.href = "https://posboot.com.br";
-        }, 1000);
-
-        return;
-    }
-
+function loop() {
     time--;
-    countdownEl.textContent = time;
+    el.textContent = time;
 
     if (time <= 0) {
         time = 5;
         location.reload();
     }
 
+    check();
     setTimeout(loop, 1000);
 }
 
 loop();
 </script>
+
+</body>
+</html>
